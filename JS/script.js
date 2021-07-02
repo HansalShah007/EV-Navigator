@@ -51,7 +51,9 @@ next_button.addEventListener("click", () => {
 
 async function load_models() {
     SOC_model = await tf.loadLayersModel('./Model_SOC/JSON/model.json');
+    console.log(SOC_model);
     SOE_model = await tf.loadLayersModel('./Model_SOE/JSON/model.json');
+    console.log(SOE_model);
 }
 
 async function load_data() {
