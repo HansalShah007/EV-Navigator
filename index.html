@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="CSS/style.css">
+
+  <title>EV Navigator</title>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid container">
+      <sapn class="navbar-brand" href="#">
+        EV Navigator
+        </span>
+    </div>
+  </nav>
+
+  <section class="container input">
+
+    <div class="info-text">
+      <h3><strong>About</strong></h3>
+      This is only a basic prototype of an application that tries to predict the
+      range that the EV can travel depending upon certain parameters. The application uses different tensorflow models
+      to continuosly capture necessary data from the sensors in the EV and make predictions for SOC, SOE, and finally
+      the range of the EV depending upon the current scenario/ environment of the vehicle.
+
+      <br>
+      <br>
+
+      <strong>
+        <h4>The application uses three tensorflow models</h4>
+      </strong><br>
+
+      <div class="model-info">
+
+        <strong>&#09 1. SOC Predictor</strong><br><br>
+        This model focuses on predicting the SOC (State of Charge) of the battery from the battey's
+        <span class="highlight">voltage (V)</span>, <span class="highlight">current (A)</span>, and <span
+          class="highlight">temperature (degree Celcius)</span>
+        data. <br><br>
+
+        For training the model, we have used the drive cycle data from the <a
+          href="https://data.mendeley.com/datasets/wykht8y7tg/1" target="_blank">
+          <stron><em>Panasonic 18650PF Li-ion Battery</em></stron>
+        </a> dataset. Various charging and discharging cycle tests were performed on the lithium-ion battery, at
+        different temperatures and rates. We are interested in the drive cycle data.The drive cycle power profile is
+        calculated for an electric <span class="highlight">Ford F150 truck</span> with a 35kWh battery pack scaled for a
+        single 18650PF cell. <br><br>
+
+        For training the model for SOC estimation, we have used the drive cycle data available at 25&#8451;, taking into
+        consideration, the real life temperature scenario of driving an EV. The required data was extracted out, it was
+        preprocessed,
+        outliers were removed, and it was normalized before using for training the tensorflow model. The neural network
+        architecture used in the model is as follows:
+
+        <div class="container">
+          <img src="SVG/SOC_Neural_Net.svg" class="neural-net">
+        </div>
+
+        <br><br>
+
+        <strong>&#09 2. SOE Predictor</strong><br><br>
+        This model builds upon the SOC model. It focuses on predicting the SOE (State of Energy) of the battery from the
+        <span class="highlight">voltage (V)</span>, <span class="highlight">current (A)</span>, <span
+          class="highlight">temperature (degree Celcius)</span>, and the <span class="highlight">predicted value of
+          SOC</span>.<br><br>
+
+
+        For training the model, we have used the same dataset as we did for SOC model. The preprocessed data along with
+        the new predicted value for SOC, is used as an input to the neural network. We need the SOE for calculating the
+        amount of energy (kWh) remaining in the battery for range prediction.The neural network architecture used in the
+        model is as follows:
+
+
+        <div class="container">
+          <img src="SVG/SOC_Neural_Net.svg" class="neural-net">
+        </div>
+
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Hyperparameters used for both models</th>
+              <th scope="col">Value/ Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Activation function for hidden layers</th>
+              <td>RELU</td>
+
+            </tr>
+            <tr>
+              <th scope="row">Activation function for output layer</th>
+              <td>Linear</td>
+
+            </tr>
+            <tr>
+              <th scope="row">Technique used to prevent overfitting</th>
+              <td>Early Stopping</td>
+            </tr>
+            <tr>
+              <th scope="row">Optimizer</th>
+              <td>Adam</td>
+            </tr>
+            <tr>
+              <th scope="row">Loss Function</th>
+              <td>Mean Squared Error</td>
+            </tr>
+            <tr>
+              <th scope="row">Epochs</th>
+              <td>700</td>
+            </tr>
+            <tr>
+              <th scope="row">Batch Size</th>
+              <td>512</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><small>For more information <a href="SOC_&_SOE_estimation.html" target="_blank">click here</a></small></p>
+        <br><br>
+
+        <br>
+
+        <strong>&#09 3. Range Predictor</strong><br><br>
+        This model predicts the range that the EV can travel depending upon the features like
+        <span class="highlight">amount of battery energy remaining (kWh)</span>,
+        <span class="highlight">type of route</span>,
+        <span class="highlight">status of A/C or heater in the car</span>,
+        <span class="highlight">type of tyres used</span>,
+        <span class="highlight">the driving style of the driver</span>, and
+        <span class="highlight">average speed of the car</span>.
+        <br><br>
+
+
+        For training the model, we have a used a dataset that contains real-life driving data of two Volkswagen e-Golf
+        cars, with year of manufacture as 2014 and 2016 respectively. The data is available at the Spritmonitor
+        website.<br><br>
+
+        1. <a href="https://www.spritmonitor.de/en/detail/679341.html" target="_blank">
+          <stron><em>Volkswagen e-Golf, year 2014, 85 kW (116 PS)</em></strong>
+        </a><br>
+
+        2. <a href="https://www.spritmonitor.de/en/detail/786327.html" target="_blank">
+          <stron><em>Volkswagen e-Golf, year 2016, 85kW (116 PS)</em></strong>
+        </a><br>
+
+        The data was scrapped using a python crawler (vehicle_crawler.py) available <a
+          href="https://github.com/armiro/crawlers/tree/master/SpritMonitor-Crawler " target="_blank">
+          <stron><em>here</em></strong>
+        </a>.<br><br>
+
+
+        The file includes data about <span class="highlight">3615 trips</span> with a total travel distance of around
+        <span class="highlight">152167 kilometers</span>. The data was
+        preprocessed, necessary features were one-hot encoded and standardized before being used to train the
+        model.<br><br>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Hyperparameters used for both models</th>
+              <th scope="col">Value/ Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Number of hidden layers</th>
+              <td>2</td>
+            </tr>
+            <tr>
+              <th scope="row">Number of nodes in each hidden layer</th>
+              <td>32</td>
+            </tr>
+            <tr>
+              <th scope="row">Activation function for hidden layers</th>
+              <td>RELU</td>
+            </tr>
+            <tr>
+              <th scope="row">Activation function for output layer</th>
+              <td>Linear</td>
+
+            </tr>
+            <tr>
+              <th scope="row">Technique used to prevent overfitting</th>
+              <td>Early Stopping</td>
+            </tr>
+            <tr>
+              <th scope="row">Optimizer</th>
+              <td>RMSprop</td>
+            </tr>
+            <tr>
+              <th scope="row">Loss Function</th>
+              <td>Mean Absolute Error</td>
+            </tr>
+            <tr>
+              <th scope="row">Epochs</th>
+              <td>1000</td>
+            </tr>
+            <tr>
+              <th scope="row">Batch Size</th>
+              <td>16</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><small>For more information <a href="EV_Range_Prediction_(Volkswagen_Golf).html" target="_blank">click
+              here</a></small></p>
+        <br>
+
+      </div>
+      <strong><em>Note: </em></strong> Due to the unavailability of a physical testing and data collection
+      environment, the application will take in values of the required features from a predefined csv file that contains
+      data for SOC & SOE estimation.
+      A few features required for range prediction, needs to be provided by the user on the next page.<br><br>
+      
+      <div style="display: flex; justify-content: flex-end;">
+        <a href="carinfo.html">
+          <button type="button" class="btn btn-outline-dark" id="next-button">
+            Next
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+            </svg>
+          </button>
+        </a>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Loading Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
